@@ -1,4 +1,4 @@
-import { useTodoItems } from "./TodoItemsContext";
+import { AddAction, useTodoItems } from "./TodoItemsContext";
 import { useForm, Controller } from "react-hook-form";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
@@ -18,7 +18,7 @@ export default function TodoItemForm() {
   return (
     <form
       onSubmit={handleSubmit((formData) => {
-        dispatch({ type: "add", data: { todoItem: formData } });
+        dispatch({ type: "add", data: { todoItem: formData } } as AddAction);
         reset({ title: "", details: "" });
       })}
     >
