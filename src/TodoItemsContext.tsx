@@ -46,11 +46,17 @@ interface ToggleDoneAction {
   };
 }
 
+interface SetAllItemsAction {
+  type: "setAllItems";
+  data: TodoItem[];
+}
+
 type TodoItemsAction =
   | LoadStateAction
   | AddAction
   | DeleteAction
-  | ToggleDoneAction;
+  | ToggleDoneAction
+  | SetAllItemsAction;
 
 const TodoItemsContext = createContext<
   (TodoItemsState & { dispatch: (action: TodoItemsAction) => void }) | null
@@ -131,6 +137,12 @@ function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction) {
           ...state.todoItems.slice(itemIndex + 1),
         ],
       };
+    case "setAllItems": {
+      return {
+        ...state,
+        todoItems: action.data,
+      };
+    }
     default:
       throw new Error();
   }
