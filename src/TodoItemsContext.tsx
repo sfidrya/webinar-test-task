@@ -1,5 +1,6 @@
 import {
   createContext,
+  Dispatch,
   ReactNode,
   useContext,
   useEffect,
@@ -70,6 +71,15 @@ const TodoItemsContext = createContext<
 const defaultState = { todoItems: [] };
 const localStorageKey = "todoListState";
 
+function loadStateFromLocalStorage(dispatch: Dispatch<TodoItemsAction>) {
+  const savedState = localStorage.getItem(localStorageKey);
+  if (savedState) {
+    try {
+      dispatch({ type: "loadState", data: JSON.parse(savedState) });
+    } catch {}
+  }
+}
+
 interface TodoItemsContextProviderProps {
   children?: ReactNode;
   onSaveError?: () => void;
@@ -82,13 +92,7 @@ export const TodoItemsContextProvider = ({
   const [state, dispatch] = useReducer(todoItemsReducer, defaultState);
 
   useEffect(() => {
-    const savedState = localStorage.getItem(localStorageKey);
-
-    if (savedState) {
-      try {
-        dispatch({ type: "loadState", data: JSON.parse(savedState) });
-      } catch {}
-    }
+    loadStateFromLocalStorage(dispatch);
   }, []);
 
   useEffect(() => {
@@ -97,6 +101,7 @@ export const TodoItemsContextProvider = ({
     } catch {
       console.error("Unable to save state");
       onSaveError?.();
+      loadStateFromLocalStorage(dispatch);
     }
   }, [onSaveError, state]);
 
