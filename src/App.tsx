@@ -6,6 +6,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import { TodoItemsList } from "./TodoItems";
 import { TodoItemsContextProvider } from "./TodoItemsContext";
 import TodoItemForm from "./TodoItemForm";
+import "./testUtils";
 
 const theme = createMuiTheme({
   palette: {
