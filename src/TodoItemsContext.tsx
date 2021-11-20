@@ -70,11 +70,15 @@ const TodoItemsContext = createContext<
 const defaultState = { todoItems: [] };
 const localStorageKey = "todoListState";
 
+interface TodoItemsContextProviderProps {
+  children?: ReactNode;
+  onSaveError?: () => void;
+}
+
 export const TodoItemsContextProvider = ({
   children,
-}: {
-  children?: ReactNode;
-}) => {
+  onSaveError,
+}: TodoItemsContextProviderProps) => {
   const [state, dispatch] = useReducer(todoItemsReducer, defaultState);
 
   useEffect(() => {
@@ -88,8 +92,13 @@ export const TodoItemsContextProvider = ({
   }, []);
 
   useEffect(() => {
-    localStorage.setItem(localStorageKey, JSON.stringify(state));
-  }, [state]);
+    try {
+      localStorage.setItem(localStorageKey, JSON.stringify(state));
+    } catch {
+      console.error("Unable to save state");
+      onSaveError?.();
+    }
+  }, [onSaveError, state]);
 
   return (
     <TodoItemsContext.Provider value={{ ...state, dispatch }}>
