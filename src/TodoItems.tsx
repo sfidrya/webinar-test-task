@@ -36,6 +36,7 @@ const useTodoItemListStyles = makeStyles({
 
 export const TodoItemsList = function () {
   const { todoItems, dispatch } = useTodoItems();
+  const [isDragging, setIsDragging] = useState(false);
 
   const classes = useTodoItemListStyles();
 
@@ -59,8 +60,13 @@ export const TodoItemsList = function () {
     return result;
   }
 
+  const handleBeforeDragStart = useCallback((initial: DragStart) => {
+    setIsDragging(true);
+  }, []);
+
   const handleDragEnd = useCallback(
     (result: DropResult, provided: ResponderProvided) => {
+      setIsDragging(false);
       if (!result.destination) {
         return;
       }
@@ -75,13 +81,18 @@ export const TodoItemsList = function () {
     [sortedItems, dispatch]
   );
 
-  const motionAttributes = {
-    transition: spring,
-    layout: true,
-  };
+  const motionAttributes = isDragging
+    ? {}
+    : {
+        transition: spring,
+        layout: true,
+      };
 
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
+    <DragDropContext
+      onBeforeDragStart={handleBeforeDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <Droppable droppableId="droppable">
         {(provided, snapshot) => (
           <ul
