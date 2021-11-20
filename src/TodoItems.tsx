@@ -125,7 +125,6 @@ export const TodoItemsList = function () {
 const useTodoItemCardStyles = makeStyles({
   root: {
     marginTop: 24,
-    marginBottom: 24,
   },
   doneRoot: {
     textDecoration: "line-through",
