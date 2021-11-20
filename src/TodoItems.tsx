@@ -93,7 +93,17 @@ export const TodoItemsList = function () {
       onBeforeDragStart={handleBeforeDragStart}
       onDragEnd={handleDragEnd}
     >
-      <Droppable droppableId="droppable">
+      <Droppable
+        droppableId="droppable"
+        renderClone={(provided, snapshot, rubric) => (
+          <TodoItemCard
+            item={sortedItems[rubric.source.index]}
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          />
+        )}
+      >
         {(provided, snapshot) => (
           <ul
             {...provided.droppableProps}
