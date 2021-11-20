@@ -46,6 +46,10 @@ interface ToggleDoneAction {
   };
 }
 
+interface SortByCompletionAction {
+  type: "sortByCompletion";
+}
+
 interface SetAllItemsAction {
   type: "setAllItems";
   data: TodoItem[];
@@ -56,6 +60,7 @@ type TodoItemsAction =
   | AddAction
   | DeleteAction
   | ToggleDoneAction
+  | SortByCompletionAction
   | SetAllItemsAction;
 
 const TodoItemsContext = createContext<
@@ -137,6 +142,21 @@ function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction) {
           ...state.todoItems.slice(itemIndex + 1),
         ],
       };
+    case "sortByCompletion": {
+      const sortedItems = state.todoItems.slice().sort((a, b) => {
+        if (a.done && !b.done) {
+          return 1;
+        }
+        if (!a.done && b.done) {
+          return -1;
+        }
+        return 0;
+      });
+      return {
+        ...state,
+        todoItems: sortedItems,
+      };
+    }
     case "setAllItems": {
       return {
         ...state,

@@ -1,23 +1,23 @@
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import CardHeader from "@material-ui/core/CardHeader";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import IconButton from "@material-ui/core/IconButton";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@material-ui/core/Typography";
+import DeleteIcon from "@material-ui/icons/Delete";
+import classnames from "classnames";
+import { motion } from "framer-motion";
 import { forwardRef, useCallback, useState } from "react";
 import {
   DragDropContext,
-  Droppable,
   Draggable,
-  ResponderProvided,
-  DropResult,
   DragStart,
+  Droppable,
+  DropResult,
+  ResponderProvided,
 } from "react-beautiful-dnd";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import DeleteIcon from "@material-ui/icons/Delete";
-import { makeStyles } from "@material-ui/core/styles";
-import classnames from "classnames";
-import { motion } from "framer-motion";
 import { TodoItem, useTodoItems } from "./TodoItemsContext";
 
 const spring = {
@@ -40,18 +40,6 @@ export const TodoItemsList = function () {
 
   const classes = useTodoItemListStyles();
 
-  const sortedItems = todoItems.slice().sort((a, b) => {
-    if (a.done && !b.done) {
-      return 1;
-    }
-
-    if (!a.done && b.done) {
-      return -1;
-    }
-
-    return 0;
-  });
-
   function reorder(items: TodoItem[], startIndex: number, endIndex: number) {
     const result = Array.from(items);
     const [removed] = result.splice(startIndex, 1);
@@ -71,14 +59,14 @@ export const TodoItemsList = function () {
         return;
       }
       const items = reorder(
-        sortedItems,
+        todoItems,
         result.source.index,
         result.destination.index
       );
 
       dispatch({ type: "setAllItems", data: items });
     },
-    [sortedItems, dispatch]
+    [todoItems, dispatch]
   );
 
   const motionAttributes = isDragging
@@ -97,7 +85,7 @@ export const TodoItemsList = function () {
         droppableId="droppable"
         renderClone={(provided, snapshot, rubric) => (
           <TodoItemCard
-            item={sortedItems[rubric.source.index]}
+            item={todoItems[rubric.source.index]}
             ref={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
@@ -110,7 +98,7 @@ export const TodoItemsList = function () {
             ref={provided.innerRef}
             className={classes.root}
           >
-            {sortedItems.map((item, index) => (
+            {todoItems.map((item, index) => (
               <motion.li key={item.id} {...motionAttributes}>
                 <Draggable key={item.id} draggableId={item.id} index={index}>
                   {(provided, snapshot) => (
@@ -152,14 +140,13 @@ export const TodoItemCard = forwardRef(
       [item.id, dispatch]
     );
 
-    const handleToggleDone = useCallback(
-      () =>
-        dispatch({
-          type: "toggleDone",
-          data: { id: item.id },
-        }),
-      [item.id, dispatch]
-    );
+    const handleToggleDone = useCallback(() => {
+      dispatch({
+        type: "toggleDone",
+        data: { id: item.id },
+      });
+      dispatch({ type: "sortByCompletion" });
+    }, [item.id, dispatch]);
 
     return (
       <Card
